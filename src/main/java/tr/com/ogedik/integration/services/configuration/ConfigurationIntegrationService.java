@@ -1,15 +1,11 @@
-/**
- * © 2020 Copyright Amadeus Unauthorised use and disclosure strictly forbidden.
- */
 package tr.com.ogedik.integration.services.configuration;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import tr.com.ogedik.commons.constants.Services;
-import tr.com.ogedik.commons.request.model.JiraConfigurationProperties;
-import tr.com.ogedik.commons.request.rest.HttpRestClient;
-import tr.com.ogedik.commons.request.rest.helper.RequestURLDetails;
-import tr.com.ogedik.commons.response.RestResponse;
+import tr.com.ogedik.commons.rest.request.model.JiraConfigurationProperties;
+import tr.com.ogedik.commons.rest.request.client.HttpRestClient;
+import tr.com.ogedik.commons.rest.request.client.helper.RequestURLDetails;
+import tr.com.ogedik.commons.rest.response.RestResponse;
 import tr.com.ogedik.integration.services.AbstractIntegrationService;
 
 /**

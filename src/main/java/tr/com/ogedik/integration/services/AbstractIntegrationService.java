@@ -1,16 +1,10 @@
-/**
- * © 2020 Copyright Amadeus Unauthorised use and disclosure strictly forbidden.
- */
 package tr.com.ogedik.integration.services;
 
-import com.netflix.appinfo.InstanceInfo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import tr.com.ogedik.commons.request.model.JiraConfigurationProperties;
-import tr.com.ogedik.commons.response.RestResponse;
+import tr.com.ogedik.commons.abstraction.AbstractService;
+import tr.com.ogedik.commons.rest.response.RestResponse;
+import tr.com.ogedik.commons.rest.request.client.helper.RequestURLDetails;
 import tr.com.ogedik.integration.exception.IntegrationExceptionHandler;
-import tr.com.ogedik.integration.helper.ServiceAccessor;
-import tr.com.ogedik.commons.request.rest.helper.RequestURLDetails;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -18,23 +12,19 @@ import java.util.Map;
 /**
  * @author orkun.gedik
  */
-public abstract class AbstractIntegrationService {
+public abstract class AbstractIntegrationService extends AbstractService {
 
-  @Autowired
-  protected ServiceAccessor serviceAccessor;
-
-  public RequestURLDetails generateRequestInfo(String serviceName, String path, Map<String, String> queryParams) {
-    InstanceInfo configurationInstanceInfo = serviceAccessor.getServiceInstanceInfo(serviceName);
-    return new RequestURLDetails(configurationInstanceInfo.getHomePageUrl(), configurationInstanceInfo.getVIPAddress(),
-        path, queryParams);
-  }
-
-  public JiraConfigurationProperties resolve(RestResponse<JiraConfigurationProperties> response,
-      HttpStatus... expectedStatuses) {
-    if (Arrays.asList(expectedStatuses).contains(response.getHttpStatus())) {
-      return response.getBody();
-    } else {
-      throw IntegrationExceptionHandler.handleInvalidHttpStatus(response);
+    public RequestURLDetails generateRequestInfo(String serviceName, String path, Map<String, String> queryParams) {
+        return new RequestURLDetails(getRequestUrl(serviceName), path, queryParams);
     }
-  }
+
+    public <T> T resolve(RestResponse<T> response, HttpStatus... expectedStatuses) {
+        if (expectedStatuses == null || expectedStatuses.length == 0) {
+            return response.getBody();
+        } else if (Arrays.asList(expectedStatuses).contains(response.getHttpStatus())) {
+            return response.getBody();
+        } else {
+            throw IntegrationExceptionHandler.handleInvalidHttpStatus(response);
+        }
+    }
 }

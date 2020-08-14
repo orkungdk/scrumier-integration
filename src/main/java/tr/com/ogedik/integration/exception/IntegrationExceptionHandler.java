@@ -1,13 +1,10 @@
-/**
- * © 2020 Copyright Amadeus Unauthorised use and disclosure strictly forbidden.
- */
 package tr.com.ogedik.integration.exception;
 
 import com.netflix.appinfo.InstanceInfo;
 
 import tr.com.ogedik.commons.expection.ErrorException;
 import tr.com.ogedik.commons.expection.model.ErrorMessage;
-import tr.com.ogedik.commons.response.RestResponse;
+import tr.com.ogedik.commons.rest.response.RestResponse;
 
 /**
  * @author orkun.gedik
