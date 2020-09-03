@@ -3,6 +3,7 @@ package tr.com.ogedik.integration.controller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import tr.com.ogedik.commons.constants.Services;
 import tr.com.ogedik.commons.rest.AbstractController;
@@ -14,9 +15,10 @@ import tr.com.ogedik.integration.services.jira.JiraIntegrationService;
 /**
  * @author orkun.gedik
  */
-@RestController
-public class IntegrationController extends AbstractController {
-  private static final Logger logger = LogManager.getLogger(IntegrationController.class);
+@RequestMapping(Services.Path.JIRA)
+@Controller
+public class JiraIntegrationController extends AbstractController {
+  private static final Logger logger = LogManager.getLogger(JiraIntegrationController.class);
 
   @Autowired
   private JiraIntegrationService jiraIntegrationService;
@@ -42,4 +44,12 @@ public class IntegrationController extends AbstractController {
     logger.info("A request has been received to retrieve jira user with name {}", username);
     return AbstractResponse.build(jiraIntegrationService.getJiraUser(username));
   }
+
+  @GetMapping(Services.Path.WORKLOGS)
+  public AbstractResponse getWorkflows(@RequestParam(name = "startDate") String startDate,
+                                       @RequestParam(name = "endDate") String endDate){
+    logger.info("A request has been received to retrieve all the worklogs of a user between {} and {}", startDate, endDate);
+    return AbstractResponse.build(jiraIntegrationService.getWorklogs(startDate,endDate));
+  }
 }
+
