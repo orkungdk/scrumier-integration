@@ -68,11 +68,7 @@ public class JiraIntegrationService extends AbstractService {
                 .build();
         RestResponse<String> authResponse = HttpRestClient.doPost(requestURLDetails, authenticationRequest, String.class);
 
-        if (authResponse.getHttpStatusCode().intValue() == HttpStatus.OK.value()) {
-            return true;
-        } else {
-            return false;
-        }
+        return authResponse.getHttpStatusCode() == HttpStatus.OK.value();
     }
 
     /**
