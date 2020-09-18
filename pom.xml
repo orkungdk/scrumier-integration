@@ -10,7 +10,7 @@
     </parent>
     <groupId>tr.com.ogedik</groupId>
     <artifactId>integration</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>integration</name>
     <description>Integration Service for Jira Time Tracker</description>
 
@@ -21,15 +21,11 @@
         <spring-boot-admin.version>2.2.1</spring-boot-admin.version>
         <spring-cloud.version>Hoxton.SR3</spring-cloud.version>
         <org.projectlombok.version>1.18.12</org.projectlombok.version>
+
+        <dockerfile.maven.plugin.version>1.4.10</dockerfile.maven.plugin.version>
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>tr.com.ogedik</groupId>
-            <artifactId>commons</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-rest</artifactId>
@@ -68,6 +64,12 @@
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>tr.com.ogedik</groupId>
+            <artifactId>commons</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
@@ -82,11 +84,62 @@
         </dependencies>
     </dependencyManagement>
 
+    <repositories>
+        <repository>
+            <id>ogedik.commons.snapshots</id>
+            <url>https://raw.github.com/orkungdk/commons/maven-repo/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>${project.artifactId}</artifactId>
+                                    <version>${project.version}</version>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>dockerfile-maven-plugin</artifactId>
+                <version>${dockerfile.maven.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>default</id>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <repository>ogedik/${project.name}</repository>
+                    <tag>${project.version}</tag>
+                    <skipDockerInfo>true</skipDockerInfo>
+                </configuration>
             </plugin>
         </plugins>
     </build>
