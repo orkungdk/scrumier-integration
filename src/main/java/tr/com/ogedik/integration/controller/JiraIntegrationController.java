@@ -3,7 +3,6 @@ package tr.com.ogedik.integration.controller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import tr.com.ogedik.commons.constants.Services;
 import tr.com.ogedik.commons.rest.AbstractController;
@@ -14,8 +13,6 @@ import tr.com.ogedik.commons.rest.response.AbstractResponse;
 import tr.com.ogedik.integration.services.jira.JiraIntegrationService;
 import tr.com.ogedik.integration.services.jira.JiraWorklogCreationService;
 import tr.com.ogedik.integration.services.jira.JiraWorklogRetrievalService;
-
-import javax.validation.Valid;
 
 /**
  * @author orkun.gedik
@@ -64,7 +61,7 @@ public class JiraIntegrationController extends AbstractController {
   }
 
   @PostMapping(Services.Path.CREATE_LOG)
-  public AbstractResponse createNewWorklog(@Valid @RequestBody CreateWorklogRequest createWorklogRequest){
+  public AbstractResponse createNewWorklog(@RequestBody CreateWorklogRequest createWorklogRequest){
     logger.info("A request has been received to create a new worklog in issue {}", createWorklogRequest.getIssueKey());
     return AbstractResponse.build(jiraWorklogCreationService.createWorklog(createWorklogRequest));
 
