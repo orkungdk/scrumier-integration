@@ -12,7 +12,7 @@
     <artifactId>integration</artifactId>
     <version>1.0.0</version>
     <name>integration</name>
-    <description>Integration Service for Jira Time Tracker</description>
+    <description>Integration Service for Scrumier</description>
 
     <!-- Dependency versions -->
     <properties>
