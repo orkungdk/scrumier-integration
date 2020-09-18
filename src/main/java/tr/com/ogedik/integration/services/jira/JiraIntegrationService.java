@@ -3,6 +3,7 @@ package tr.com.ogedik.integration.services.jira;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import tr.com.ogedik.commons.abstraction.AbstractService;
 import tr.com.ogedik.commons.model.JiraUser;
 import tr.com.ogedik.commons.rest.response.RestResponse;
 import tr.com.ogedik.commons.util.MapUtils;
@@ -12,11 +13,8 @@ import tr.com.ogedik.commons.rest.request.model.JiraConfigurationProperties;
 import tr.com.ogedik.commons.rest.request.client.HttpRestClient;
 import tr.com.ogedik.commons.rest.request.client.helper.RequestURLDetails;
 import tr.com.ogedik.integration.constants.JiraRestConstants;
-import tr.com.ogedik.integration.services.AbstractIntegrationService;
 import tr.com.ogedik.integration.services.configuration.ConfigurationIntegrationService;
-
-import java.util.Base64;
-import java.util.Map;
+import tr.com.ogedik.integration.util.IntegrationUtil;
 
 /**
  * This service processes the received request from other microservices in the project and routes those requests to the
@@ -29,7 +27,7 @@ import java.util.Map;
  * @author orkun.gedik
  */
 @Service
-public class JiraIntegrationService extends AbstractIntegrationService {
+public class JiraIntegrationService extends AbstractService {
 
     @Autowired
     private ConfigurationIntegrationService configurationService;
@@ -70,11 +68,7 @@ public class JiraIntegrationService extends AbstractIntegrationService {
                 .build();
         RestResponse<String> authResponse = HttpRestClient.doPost(requestURLDetails, authenticationRequest, String.class);
 
-        if (authResponse.getHttpStatusCode().intValue() == HttpStatus.OK.value()) {
-            return true;
-        } else {
-            return false;
-        }
+        return authResponse.getHttpStatusCode() == HttpStatus.OK.value();
     }
 
     /**
@@ -90,17 +84,14 @@ public class JiraIntegrationService extends AbstractIntegrationService {
 
         RequestURLDetails requestURLDetails = new RequestURLDetails(properties.getBaseURL(),
                 JiraRestConstants.EndPoint.USER, MapUtils.of("username", username));
-        RestResponse<JiraUser> userResponse = HttpRestClient.doGet(requestURLDetails, initJiraHeaders(properties),
+        RestResponse<JiraUser> userResponse = HttpRestClient.doGet(requestURLDetails, IntegrationUtil.initJiraHeaders(properties),
                 JiraUser.class);
 
         return resolve(userResponse);
     }
 
 
-    private Map<String, String> initJiraHeaders(JiraConfigurationProperties properties) {
-        String input = properties.getUsername() + ":" + properties.getPassword();
-        String encoded = Base64.getEncoder().encodeToString(input.getBytes());
 
-        return MapUtils.of(JiraRestConstants.Headers.AUTHORIZATION, "Basic " + encoded);
-    }
+
+
 }
