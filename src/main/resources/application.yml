@@ -1,12 +1,14 @@
 # Application configuration
 server:
-    port: 8094
+  port: 8094
 spring:
-    application:
-        name: integration
+  application:
+    name: integration
 
 # Eureka client configuration
 eureka:
-    client:
-        service-url:
-            defaultZone: http://${DISCOVERY_SERVER_HOST:localhost}:${DISCOVERY_SERVER_PORT:8761}/eureka
+  instance:
+    preferIpAddress: true
+  client:
+    service-url:
+      defaultZone: http://${DISCOVERY_SERVER_HOST:localhost}:${DISCOVERY_SERVER_PORT:8761}/eureka
