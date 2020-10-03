@@ -3,15 +3,16 @@ package tr.com.ogedik.integration.services.jira;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import tr.com.ogedik.commons.abstraction.AbstractService;
 import tr.com.ogedik.commons.model.JiraUser;
+import tr.com.ogedik.commons.rest.request.client.HttpRestClient;
+import tr.com.ogedik.commons.rest.request.client.helper.RequestURLDetails;
+import tr.com.ogedik.commons.rest.request.model.AuthenticationRequest;
+import tr.com.ogedik.commons.rest.request.model.JiraConfigurationProperties;
+import tr.com.ogedik.commons.rest.request.model.sessions.JiraSession;
+import tr.com.ogedik.commons.rest.request.model.sessions.UnauthorizedJiraSession;
 import tr.com.ogedik.commons.rest.response.RestResponse;
 import tr.com.ogedik.commons.util.MapUtils;
 import tr.com.ogedik.commons.validator.MandatoryFieldValidator;
-import tr.com.ogedik.commons.rest.request.model.AuthenticationRequest;
-import tr.com.ogedik.commons.rest.request.model.JiraConfigurationProperties;
-import tr.com.ogedik.commons.rest.request.client.HttpRestClient;
-import tr.com.ogedik.commons.rest.request.client.helper.RequestURLDetails;
 import tr.com.ogedik.integration.constants.JiraRestConstants;
 import tr.com.ogedik.integration.services.configuration.ConfigurationIntegrationService;
 import tr.com.ogedik.integration.util.IntegrationUtil;
@@ -27,7 +28,7 @@ import tr.com.ogedik.integration.util.IntegrationUtil;
  * @author orkun.gedik
  */
 @Service
-public class JiraIntegrationService extends AbstractService {
+public class JiraIntegrationService {
 
     @Autowired
     private ConfigurationIntegrationService configurationService;
@@ -38,7 +39,7 @@ public class JiraIntegrationService extends AbstractService {
      * @param authenticationRequest authentication request information
      * @return {@code true} if the given request is able to authenticate.
      */
-    public boolean authenticate(AuthenticationRequest authenticationRequest) {
+    public JiraSession authenticate(AuthenticationRequest authenticationRequest) {
         JiraConfigurationProperties properties = configurationService.getJiraConfigurationProperties();
         properties.setUsername(authenticationRequest.getUsername());
         properties.setPassword(authenticationRequest.getPassword());
@@ -57,7 +58,7 @@ public class JiraIntegrationService extends AbstractService {
      *           Jira instance returns 401 in case of given username and password in the {@code properties} are wrong.
      *           Jira instance returns 500 in case of there is an internal problem in Jira.
      */
-    public boolean connect(JiraConfigurationProperties properties) {
+    public JiraSession connect(JiraConfigurationProperties properties) {
         MandatoryFieldValidator.getInstance().validate(properties);
 
         RequestURLDetails requestURLDetails = new RequestURLDetails(properties.getBaseURL(),
@@ -66,9 +67,11 @@ public class JiraIntegrationService extends AbstractService {
                 .username(properties.getUsername())
                 .password(properties.getPassword())
                 .build();
-        RestResponse<String> authResponse = HttpRestClient.doPost(requestURLDetails, authenticationRequest, String.class);
+        RestResponse<JiraSession> authResponse = HttpRestClient.doPost(requestURLDetails, authenticationRequest, JiraSession.class);
 
-        return authResponse.getHttpStatusCode() == HttpStatus.OK.value();
+        return authResponse.getHttpStatusCode() == HttpStatus.OK.value()
+                ? authResponse.getBody()
+                : new UnauthorizedJiraSession();
     }
 
     /**
@@ -87,7 +90,7 @@ public class JiraIntegrationService extends AbstractService {
         RestResponse<JiraUser> userResponse = HttpRestClient.doGet(requestURLDetails, IntegrationUtil.initJiraHeaders(properties),
                 JiraUser.class);
 
-        return resolve(userResponse);
+        return userResponse.getBody();
     }
 
 

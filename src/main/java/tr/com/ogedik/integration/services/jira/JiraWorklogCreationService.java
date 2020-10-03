@@ -3,7 +3,6 @@ package tr.com.ogedik.integration.services.jira;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import tr.com.ogedik.commons.abstraction.AbstractService;
 import tr.com.ogedik.commons.rest.request.client.HttpRestClient;
 import tr.com.ogedik.commons.rest.request.client.helper.RequestURLDetails;
 import tr.com.ogedik.commons.rest.request.model.CreateWorklogRequest;
@@ -19,7 +18,7 @@ import tr.com.ogedik.integration.util.IntegrationUtil;
  * @author enes.erciyes
  */
 @Service
-public class JiraWorklogCreationService extends AbstractService {
+public class JiraWorklogCreationService {
 
   @Autowired private ConfigurationIntegrationService configurationService;
 

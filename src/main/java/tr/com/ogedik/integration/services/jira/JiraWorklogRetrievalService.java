@@ -2,7 +2,6 @@ package tr.com.ogedik.integration.services.jira;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tr.com.ogedik.commons.abstraction.AbstractService;
 import tr.com.ogedik.commons.rest.request.client.HttpRestClient;
 import tr.com.ogedik.commons.rest.request.client.helper.RequestURLDetails;
 import tr.com.ogedik.commons.rest.request.model.JiraConfigurationProperties;
@@ -15,7 +14,7 @@ import tr.com.ogedik.integration.services.configuration.ConfigurationIntegration
 import tr.com.ogedik.integration.util.IntegrationUtil;
 
 @Service
-public class JiraWorklogRetrievalService extends AbstractService {
+public class JiraWorklogRetrievalService {
 
     public static final String WORKLOG = "worklog";
     public static final String SUMMARY = "summary";
@@ -41,7 +40,7 @@ public class JiraWorklogRetrievalService extends AbstractService {
         RestResponse<JQLSearchResult> searchResponse = HttpRestClient.doGet(requestURLDetails, IntegrationUtil.initJiraHeaders(properties),
                 JQLSearchResult.class);
 
-        return resolve(searchResponse);
+        return searchResponse.getBody();
     }
 
 
@@ -52,6 +51,6 @@ public class JiraWorklogRetrievalService extends AbstractService {
         RestResponse<JQLSearchResult> searchResponse = HttpRestClient.doGet(requestURLDetails, IntegrationUtil.initJiraHeaders(properties),
                 JQLSearchResult.class);
 
-        return resolve(searchResponse);
+        return searchResponse.getBody();
     }
 }

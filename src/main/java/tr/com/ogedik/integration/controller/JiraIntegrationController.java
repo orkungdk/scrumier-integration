@@ -3,12 +3,14 @@ package tr.com.ogedik.integration.controller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import tr.com.ogedik.commons.constants.Services;
 import tr.com.ogedik.commons.rest.AbstractController;
 import tr.com.ogedik.commons.rest.request.model.AuthenticationRequest;
 import tr.com.ogedik.commons.rest.request.model.CreateWorklogRequest;
 import tr.com.ogedik.commons.rest.request.model.JiraConfigurationProperties;
+import tr.com.ogedik.commons.rest.request.model.sessions.JiraSession;
 import tr.com.ogedik.commons.rest.response.AbstractResponse;
 import tr.com.ogedik.integration.services.jira.JiraIntegrationService;
 import tr.com.ogedik.integration.services.jira.JiraWorklogCreationService;
@@ -33,17 +35,17 @@ public class JiraIntegrationController extends AbstractController {
   @PostMapping(Services.Path.JIRA_AUTH)
   public AbstractResponse authenticateJira(@RequestBody AuthenticationRequest authenticationRequest) {
     logger.info("A request has been received to authenticate configured jira instance");
-    boolean result = jiraIntegrationService.authenticate(authenticationRequest);
+    JiraSession result = jiraIntegrationService.authenticate(authenticationRequest);
 
-    return result ? AbstractResponse.OK() : AbstractResponse.unauthorized();
+    return AbstractResponse.build(result, result.isAuthorized() ? HttpStatus.OK : HttpStatus.UNAUTHORIZED);
   }
 
   @PostMapping(Services.Path.TEST_CONNECTION)
   public AbstractResponse connectJira(@RequestBody JiraConfigurationProperties properties) {
     logger.info("A request has been received to authenticate configured jira instance");
-    boolean result = jiraIntegrationService.connect(properties);
+    JiraSession result = jiraIntegrationService.connect(properties);
 
-    return result ? AbstractResponse.OK() : AbstractResponse.unauthorized();
+    return AbstractResponse.build(result, result.isAuthorized() ? HttpStatus.OK : HttpStatus.UNAUTHORIZED);
   }
 
   @GetMapping(Services.Path.JIRA_USER)
